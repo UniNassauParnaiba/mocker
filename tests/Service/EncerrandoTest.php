@@ -51,6 +51,8 @@ class EncerrandoTest extends TestCase
         // assertions
         $leiloes = $leilaoDao->recuperarFinalizados();
         self::assertCount(2, $leiloes);
+        self::assertTrue($leiloes[0]->estaFinalizado());
+        self::assertTrue($leiloes[1]->estaFinalizado());
         self::assertEquals('Fiat 147 0km', $leiloes[0]->recuperarDescricao());
         self::assertEquals('Variant 1972 0km', $leiloes[1]->recuperarDescricao());
     }
