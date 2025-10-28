@@ -4,27 +4,16 @@ namespace Alura\Leilao\Model;
 
 class Leilao
 {
-    /** @var Lance[] */
-    private $lances;
-    /** @var string */
-    private $descricao;
-    /** @var bool */
-    private $finalizado;
-    /** @var \DateTimeInterface  */
-    private $dataInicio;
-    /** @var int */
-    private $id;
+    private array $lances = [];
+    private bool $finalizado = false;
 
-    public function __construct(string $descricao, \DateTimeImmutable $dataInicio = null, int $id = null)
-    {
-        $this->descricao = $descricao;
-        $this->finalizado = false;
-        $this->lances = [];
-        $this->dataInicio = $dataInicio ?? new \DateTimeImmutable();
-        $this->id = $id;
-    }
+    public function __construct(
+        private readonly string $descricao,
+        private readonly \DateTimeImmutable $dataInicio = new \DateTimeImmutable(),
+        private readonly ?int $id = null
+    ) {}
 
-    public function recebeLance(Lance $lance)
+    public function recebeLance(Lance $lance): void
     {
         if ($this->finalizado) {
             throw new \DomainException('Este leilão já está finalizado');
@@ -32,22 +21,20 @@ class Leilao
 
         $ultimoLance = empty($this->lances)
             ? null
-            : $this->lances[count($this->lances) - 1];
-        if (!empty($this->lances) && $ultimoLance->getUsuario() == $lance->getUsuario()) {
+            : $this->lances[array_key_last($this->lances)];
+        
+        if ($ultimoLance?->getUsuario() == $lance->getUsuario()) {
             throw new \DomainException('Usuário já deu o último lance');
         }
 
         $this->lances[] = $lance;
     }
 
-    public function finaliza()
+    public function finaliza(): void
     {
         $this->finalizado = true;
     }
 
-    /**
-     * @return Lance[]
-     */
     public function getLances(): array
     {
         return $this->lances;
@@ -63,20 +50,20 @@ class Leilao
         return $this->finalizado;
     }
 
-    public function recuperarDataInicio(): \DateTimeInterface
+    public function recuperarDataInicio(): \DateTimeImmutable
     {
         return $this->dataInicio;
     }
 
     public function temMaisDeUmaSemana(): bool
     {
-        $hoje = new \DateTime();
+        $hoje = new \DateTimeImmutable();
         $intervalo = $this->dataInicio->diff($hoje);
 
         return $intervalo->days > 7;
     }
 
-    public function recuperarId(): int
+    public function recuperarId(): ?int
     {
         return $this->id;
     }

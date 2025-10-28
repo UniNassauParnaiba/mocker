@@ -2,30 +2,33 @@
 
 namespace Alura\Leilao\Tests\Domain;
 
+use DomainException;
 use Alura\Leilao\Model\Lance;
 use Alura\Leilao\Model\Leilao;
 use Alura\Leilao\Model\Usuario;
-use DomainException;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class LeilaoTest extends TestCase
 {
-    public function testProporLanceEmLeilaoFinalizadoDeveLancarExcecao()
+    public function testProporLanceEmLeilaoFinalizadoDeveLancarExcecao(): void
     {
-        $this->expectException(DomainException::class);
-        $this->expectExceptionMessage('Este leilão já está finalizado');
-
+        // Arrange
         $leilao = new Leilao('Fiat 147 0KM');
         $leilao->finaliza();
+        
+        $usuario = new Usuario('João Silva');
+        $lance = new Lance($usuario, 1000);
 
-        $leilao->recebeLance(new Lance(new Usuario(''), 1000));
+        // Assert
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('Este leilão já está finalizado');
+        
+        // Act
+        $leilao->recebeLance($lance);
     }
 
-    /**
-     * @param int $qtdEsperado
-     * @param Lance[] $lances
-     * @dataProvider dadosParaProporLances
-     */
+    #[dataProvider('dadosParaProporLances')]
     public function testProporLancesEmLeilaoDeveFuncionar(int $qtdEsperado, array $lances)
     {
         $leilao = new Leilao('Fiat 147 0KM');
@@ -33,7 +36,7 @@ class LeilaoTest extends TestCase
             $leilao->recebeLance($lance);
         }
 
-        static::assertCount($qtdEsperado, $leilao->getLances());
+        self::assertCount($qtdEsperado, $leilao->getLances());
     }
 
     public function testMesmoUsuarioNaoPodeProporDoisLancesSeguidos()
@@ -48,7 +51,7 @@ class LeilaoTest extends TestCase
         $leilao->recebeLance(new Lance($usuario, 1100));
     }
 
-    public function dadosParaProporLances()
+    public static function dadosParaProporLances()
     {
         $usuario1 = new Usuario('Usuário 1');
         $usuario2 = new Usuario('Usuário 2');

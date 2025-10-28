@@ -5,8 +5,9 @@ namespace Alura\Leilao\Tests\Domain;
 use Alura\Leilao\Model\Lance;
 use Alura\Leilao\Model\Leilao;
 use Alura\Leilao\Model\Usuario;
-use Alura\Leilao\Service\Avaliador;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Alura\Leilao\Service\Avaliador;
 
 class AvaliadorTest extends TestCase
 {
@@ -18,23 +19,19 @@ class AvaliadorTest extends TestCase
         $this->avaliador = new Avaliador();
     }
 
-    /**
-     * @dataProvider leilaoComLancesEmOrdemAleatoria
-     * @dataProvider leilaoComLancesEmOrdemDecrescente
-     * @dataProvider leilaoComLancesEmOrdemCrescente
-     */
+    #[dataProvider('leilaoComLancesEmOrdemAleatoria')] 
+    #[dataProvider('leilaoComLancesEmOrdemDecrescente')] 
+    #[dataProvider('leilaoComLancesEmOrdemCrescente')]
     public function testAvaliadorDeveAcharMaiorValor(Leilao $leilao)
     {
         $this->avaliador->avalia($leilao);
 
-        static::assertEquals(2000, $this->avaliador->getMaiorValor());
+        self::assertEquals(2000, $this->avaliador->getMaiorValor());
     }
 
-    /**
-     * @dataProvider leilaoComLancesEmOrdemAleatoria
-     * @dataProvider leilaoComLancesEmOrdemDecrescente
-     * @dataProvider leilaoComLancesEmOrdemCrescente
-     */
+    #[DataProvider('leilaoComLancesEmOrdemAleatoria')] 
+    #[DataProvider('leilaoComLancesEmOrdemDecrescente')] 
+    #[DataProvider('leilaoComLancesEmOrdemCrescente')]
     public function testAvaliadorDeveAcharMenorValor(Leilao $leilao)
     {
         $this->avaliador->avalia($leilao);
@@ -42,11 +39,10 @@ class AvaliadorTest extends TestCase
         static::assertEquals(1000, $this->avaliador->getMenorValor());
     }
 
-    /**
-     * @dataProvider leilaoComLancesEmOrdemAleatoria
-     * @dataProvider leilaoComLancesEmOrdemDecrescente
-     * @dataProvider leilaoComLancesEmOrdemCrescente
-     */
+    
+    #[DataProvider('leilaoComLancesEmOrdemAleatoria')] 
+    #[DataProvider('leilaoComLancesEmOrdemDecrescente')] 
+    #[DataProvider('leilaoComLancesEmOrdemCrescente')]
     public function testAvaliadorDeveOrdenarOs3Lances(Leilao $leilao)
     {
         $this->avaliador->avalia($leilao);
@@ -71,7 +67,7 @@ class AvaliadorTest extends TestCase
         static::assertCount(2, $this->avaliador->getTresMaioresLances());
     }
 
-    public function leilaoComLancesEmOrdemCrescente()
+    public static function leilaoComLancesEmOrdemCrescente()
     {
         $leilao = new Leilao('Fiat 147 0KM');
         $joao = new Usuario('João');
@@ -87,7 +83,7 @@ class AvaliadorTest extends TestCase
         ];
     }
 
-    public function leilaoComLancesEmOrdemDecrescente()
+    public static function leilaoComLancesEmOrdemDecrescente()
     {
         $leilao = new Leilao('Fiat 147 0KM');
         $joao = new Usuario('João');
@@ -103,7 +99,7 @@ class AvaliadorTest extends TestCase
         ];
     }
 
-    public function leilaoComLancesEmOrdemAleatoria()
+    public static function leilaoComLancesEmOrdemAleatoria()
     {
         $leilao = new Leilao('Fiat 147 0KM');
         $joao = new Usuario('João');
